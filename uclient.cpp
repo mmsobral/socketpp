@@ -1,31 +1,41 @@
-/* 
- * File:   client.cpp
- * Author: msobral
- *
- * Created on 6 de Julho de 2016, 20:13
- */
+/*
+* A UDP client socket demo: using the SocketPP API
+*/
 
-#include <cstdlib>
 #include <iostream>
-#include <stdio.h>
+#include <string>
 #include "UDPSocket.h"
 
-using namespace std;
+using std::string;
+using std::cin;
+using std::cout;
+using std::endl;
 
-/*
- * 
- */
-int main(int argc, char** argv) {
-    UDPSocket client;
-    
-    try {
-      // conecta no servidor da wiki
-      client.send("hello world ! \n\n", "localhost", 8000);
-    } catch (UDPSocket::SocketException e) {
-      perror("ao enviar");
+int main(int argc, char * argv[]) {
+    if (argc < 3) {
+        cerr << "Use: " << argv[0] << " IP_server_address port" << endl;
+        return 0;
     }
     
+    // IP server address and port must be provided as command line arguments
+    string ip = argv[1];
+    auto port stoi(argv[2]);
     
-    return 0;
+    // creates a UDP client socket
+    UDPSocket client;
+    
+    // send forever ...
+    while (true) {
+      string algo;
+      
+      // reads a line from standard inpuit, and send it to the server
+      getline(cin, algo);
+      try {
+        cliente.send(algo + '\n', ip, port);
+      } catch (UDPSocket::SocketException e) {
+        perror("send error");
+      }
+    }
+    
 }
 
