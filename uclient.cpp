@@ -19,10 +19,10 @@ int main(int argc, char * argv[]) {
     
     // IP server address and port must be provided as command line arguments
     string ip = argv[1];
-    auto port stoi(argv[2]);
+    auto port = stoi(argv[2]);
     
     // creates a UDP client socket
-    UDPSocket client;
+    UDPSocket cliente;
     
     // send forever ...
     while (true) {
