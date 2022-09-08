@@ -16,6 +16,7 @@
 #include <memory>
 #include <optional>
 #include "BaseSocket.h"
+#include <iostream>
 
 namespace sockpp {
 
@@ -66,7 +67,9 @@ namespace sockpp {
     class Connection : public TCPBaseSocket {
     public:
         Connection(int socket_descriptor);
-        ~Connection() {}
+        ~Connection() {
+            std::cout << "desconectando" << std::endl;
+        }
 
         bool isNew() const { return novo; }
 
@@ -92,26 +95,26 @@ namespace sockpp {
 
         // aceita uma conexão. Isso retorna um outro socket,
         // que deve ser usado para envio e recepção
-        std::optional<Connection> accept();
+        std::optional<std::shared_ptr<Connection>> accept();
 
         // espera por novas conexões OU por dados disponíveis
         // nas conexões existentes por no máximo "timeout_ms" milissegundos.
         // Retorna o primeiro socket que tiver
         // dados para serem lidos. Novas conexões têm prioridade em relação
         // a dados existentes ...
-        std::optional<Connection> wait(long timeout_ms);
+        std::optional<std::shared_ptr<Connection>> wait(long timeout_ms);
 
         // espera indefinidamente por novas conexões OU por dados disponíveis
         // nas conexões existentes. Retorna o primeiro socket que tiver
         // dados para serem lidos. Novas conexões têm prioridade em relação
         // a dados existentes ...
-        std::optional<Connection> wait();
+        std::optional<std::shared_ptr<Connection>> wait();
 
         // encerra uma das conexões
         // isso é opcional: se um socket for encerrado explicitamente
         // com seu método "close", o socket servidor que o originou
         /// irá detectar isso quando apropriado ...
-        void close_connection(Connection &sock);
+        void close_connection(std::shared_ptr<Connection> sock);
 
         // retorna a quantidade de conexões existentes
         int get_num_connections() const;
@@ -146,7 +149,7 @@ namespace sockpp {
         };
 
     protected:
-        std::list<std::unique_ptr<Connection>> conns;
+        std::list<std::shared_ptr<Connection>> conns;
     };
 
 }

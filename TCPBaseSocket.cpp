@@ -12,6 +12,7 @@
 #include <string.h>
 #include <errno.h>
 #include <exception>
+#include <algorithm>
 #include "TCPBaseSocket.h"
 
 namespace sockpp {
@@ -64,35 +65,33 @@ namespace sockpp {
     TCPServerSocket::~TCPServerSocket() {
     }
 
-    std::optional<Connection> TCPServerSocket::accept() {
+    std::optional<std::shared_ptr<Connection>> TCPServerSocket::accept() {
         sockaddr_in addr;
         socklen_t len = sizeof(addr);
 
         int con = ::accept(sd, (sockaddr *) &addr, &len);
-        if (con < 0) throw TCPBaseSocket::SocketException(errno);
-        conns.push_back(std::make_unique<Connection>(con));
-        return std::optional<Connection>{*conns.back()};
+//        if (con < 0) throw TCPBaseSocket::SocketException(errno);
+        if (con < 0) return std::nullopt;
+        conns.push_back(std::make_shared<Connection>(con));
+        return std::optional<std::shared_ptr<Connection>>{conns.back()};
     }
 
     int TCPServerSocket::get_num_connections() const {
         return conns.size();
     }
 
-    void TCPServerSocket::close_connection(Connection &sock) {
-        for (auto it = conns.begin(); it != conns.end(); it++) {
-            if (it->get() == &sock) {
-                conns.erase(it);
-                break;
-            }
+    void TCPServerSocket::close_connection(std::shared_ptr<Connection> sock) {
+        auto it = std::find_if(conns.begin(), conns.end(), [&sock](auto & conn) { return conn == sock;});
+        if (it != conns.end()) {
+            conns.erase(it);
         }
-
     }
 
-    std::optional<Connection> TCPServerSocket::wait() {
+    std::optional<std::shared_ptr<Connection>> TCPServerSocket::wait() {
         return wait(0);
     }
 
-    std::optional<Connection> TCPServerSocket::wait(long timeout_ms) {
+    std::optional<std::shared_ptr<Connection>> TCPServerSocket::wait(long timeout_ms) {
         if (not sd) throw TCPBaseSocket::SocketException(EINVAL);
         timeval tv, *tv_ptr = NULL;
 
@@ -124,27 +123,26 @@ namespace sockpp {
             return accept();
         }
 
-        for (auto &sock: conns) {
-            int sockd = sock->get_descriptor();
-            if (FD_ISSET(sockd, &socks)) {
-                if (not sock->isConnected()) {
-                    throw TCPServerSocket::DisconnectedException(sock->get_peer());
+        auto it = std::find_if(conns.begin(), conns.end(), [&socks](auto & sock) {
+            if (FD_ISSET(sock->get_descriptor(), &socks)) {
+                if (sock->isConnected()) {
+                    if (sock->isNew()) sock->set_used();
+                    return true;
                 }
-                if (sock->isNew()) sock->set_used();
-                return std::optional<Connection>{*sock};
             }
+            return false;
+        });
+        if (it != conns.end()) {
+            return std::optional<std::shared_ptr<Connection>>{*it};
         }
 
         return std::nullopt;
     }
 
     void TCPServerSocket::check_disconnected() {
-        for (auto it = conns.begin(); it != conns.end(); it++) {
-            auto & conn = *it;
-            if (not conn->isConnected()) {
-                it = conns.erase(it);
-            }
-        }
+        auto last = conns.end();
+        auto end = std::remove_if(conns.begin(), last, [](auto & p_conn) {return ! p_conn->isConnected();});
+        if (end != last) conns.erase(end);
     }
 
     Connection::Connection(int socket_descriptor) :

@@ -28,15 +28,15 @@ int main(int argc, char** argv) {
                 auto sock = conn.value();
                 // obtém o IP e port do socket da outra ponta da
                 // conexão
-                auto addr = sock.get_peer();
+                auto addr = sock->get_peer();
 
-                if (sock.isNew()) {
+                if (sock->isNew()) {
                     // caso contrário, deve ser uma  nova conexão
                     cout << "Nova conexão: " << addr.str() << endl;
                 } else {
                     // tenta receber até 1024 bytes no socket retornado
                     // por "wait"
-                    auto data = sock.recv(1024);
+                    auto data = sock->recv(1024);
 
                     // conseguiu ler algo desse socket ...
                     if (data.size()) {
@@ -46,7 +46,7 @@ int main(int argc, char** argv) {
                         cout.write(data.data(), data.size()) << endl;
 
                         string resp = "recebido: " + string(data.begin(), data.end());
-                        sock.send(resp);
+                        sock->send(resp);
                     }
                 }
             }
