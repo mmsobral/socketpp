@@ -62,13 +62,6 @@ namespace sockpp {
     }
 
     TCPServerSocket::~TCPServerSocket() {
-        std::list<Connection *>::iterator it;
-
-        check_disconnected();
-
-        for (it = conns.begin(); it != conns.end(); it++) {
-            delete *it;
-        }
     }
 
     Connection &TCPServerSocket::accept() {
@@ -77,9 +70,9 @@ namespace sockpp {
 
         int con = ::accept(sd, (sockaddr *) &addr, &len);
         if (con < 0) throw TCPBaseSocket::SocketException(errno);
-        Connection *novo = new Connection(con);
-        conns.push_back(novo);
-        return *novo;
+//        auto novo = std::make_unique<Connection>(con);
+        conns.push_back(std::make_unique<Connection>(con));
+        return *conns.back();
     }
 
     int TCPServerSocket::get_num_connections() const {
@@ -88,10 +81,8 @@ namespace sockpp {
 
     void TCPServerSocket::close_connection(Connection &sock) {
         for (auto it = conns.begin(); it != conns.end(); it++) {
-            if (*it == &sock) {
-                Connection *ptr = *it;
+            if (it->get() == &sock) {
                 conns.erase(it);
-                delete ptr;
                 break;
             }
         }
@@ -119,9 +110,8 @@ namespace sockpp {
         FD_SET(sd, &socks);
         int maior = sd;
 
-        for (auto it = conns.begin(); it != conns.end(); it++) {
-            Connection *ptr = *it;
-            int sockd = ptr->get_descriptor();
+        for (auto & conn: conns) {
+            int sockd = conn->get_descriptor();
             FD_SET(sockd, &socks);
             if (sockd > maior) maior = sockd;
         }
@@ -134,8 +124,7 @@ namespace sockpp {
             return accept();
         }
 
-        for (auto it = conns.begin(); it != conns.end(); it++) {
-            Connection *sock = *it;
+        for (auto &sock: conns) {
             int sockd = sock->get_descriptor();
             if (FD_ISSET(sockd, &socks)) {
                 if (not sock->isConnected()) {
@@ -146,14 +135,14 @@ namespace sockpp {
             }
         }
 
+        throw std::exception();
     }
 
     void TCPServerSocket::check_disconnected() {
         for (auto it = conns.begin(); it != conns.end(); it++) {
-            Connection *ptr = *it;
-            if (not ptr->isConnected()) {
+            auto & conn = *it;
+            if (not conn->isConnected()) {
                 it = conns.erase(it);
-                delete ptr;
             }
         }
     }

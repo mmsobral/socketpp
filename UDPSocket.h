@@ -9,7 +9,6 @@
 #define	UDPSOCKET_H
 
 #include <string>
-#include <list>
 #include <string.h>
 #include <arpa/inet.h>
 #include <unistd.h>

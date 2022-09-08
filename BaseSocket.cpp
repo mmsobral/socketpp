@@ -6,14 +6,11 @@
  */
 
 #include <netdb.h>
-#include <sys/select.h>
 #include <sys/socket.h>
 #include <sys/types.h>
 #include <arpa/inet.h>
-#include <string.h>
 #include <fcntl.h>
 #include <errno.h>
-#include <sstream>
 #include "BaseSocket.h"
 
 namespace sockpp {

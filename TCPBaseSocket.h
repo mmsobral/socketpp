@@ -13,6 +13,7 @@
 #include <string.h>
 #include <arpa/inet.h>
 #include <unistd.h>
+#include <memory>
 #include "BaseSocket.h"
 
 namespace sockpp {
@@ -63,15 +64,14 @@ namespace sockpp {
 
     class Connection : public TCPBaseSocket {
     public:
+        Connection(int socket_descriptor);
+        ~Connection() {}
+
         bool isNew() const { return novo; }
 
         friend class TCPServerSocket;
 
     private:
-        Connection(int socket_descriptor);
-
-        virtual ~Connection() {}
-
         void set_used() { novo = false; }
 
         bool novo;
@@ -145,7 +145,7 @@ namespace sockpp {
         };
 
     protected:
-        std::list<Connection *> conns;
+        std::list<std::unique_ptr<Connection>> conns;
     };
 
 }
