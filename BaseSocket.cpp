@@ -20,21 +20,21 @@
 
 using namespace std;
 
-sockaddr_in BaseSocket::make_addr(const string& addr, unsigned short port) const {
+sockaddr_in BaseSocket::make_addr(const AddrInfo & addr) const {
     sockaddr_in myaddr;
-    hostent * haddr = gethostbyname(addr.c_str());
+    hostent * haddr = gethostbyname(addr.addr.c_str());
 
     if (not haddr) throw BaseSocket::SocketException(errno);
     
     myaddr.sin_family = AF_INET;
     memcpy(&myaddr.sin_addr, haddr->h_addr_list[0], haddr->h_length);
-    myaddr.sin_port = htons(port);    
+    myaddr.sin_port = htons(addr.port);
     
     return myaddr;
 }
 
-void BaseSocket::init(int type, int proto, const string & addr, int port) {
-    sockaddr_in myaddr = make_addr(addr, port);
+void BaseSocket::init(int type, int proto, const AddrInfo & addr) {
+    sockaddr_in myaddr = make_addr(addr);
 
     if ((sd = socket(AF_INET, type, proto)) < 0) {
         throw BaseSocket::SocketException(errno);
@@ -60,7 +60,7 @@ BaseSocket::BaseSocket(const BaseSocket& orig) {
     sd = orig.sd;
 }
 
-BaseSocket::BaseSocket(const string& addr, unsigned short port) {
+BaseSocket::BaseSocket(const AddrInfo& addr) {
 }
 
 BaseSocket::BaseSocket(int socket_descriptor) : sd(socket_descriptor) {
@@ -73,7 +73,7 @@ BaseSocket::~BaseSocket() {
     if (sd) ::close(sd);
 }
 
-void BaseSocket::get_peer(string& addr, unsigned short& port) {
+AddrInfo BaseSocket::get_peer() const {
     sockaddr_in paddr;
     socklen_t len = sizeof(paddr);
     
@@ -81,11 +81,10 @@ void BaseSocket::get_peer(string& addr, unsigned short& port) {
         throw BaseSocket::SocketException(errno);
     }
 
-    addr = inet_ntoa(paddr.sin_addr);
-    port = ntohs(paddr.sin_port);
+    return AddrInfo{inet_ntoa(paddr.sin_addr), ntohs(paddr.sin_port)};
 }
 
-void BaseSocket::get_self(string& addr, unsigned short& port) {
+AddrInfo BaseSocket::get_self() const {
     sockaddr_in paddr;
     socklen_t len = sizeof(paddr);
     
@@ -93,23 +92,19 @@ void BaseSocket::get_self(string& addr, unsigned short& port) {
         throw BaseSocket::SocketException(errno);
     }
 
-    addr = inet_ntoa(paddr.sin_addr);
-    port = ntohs(paddr.sin_port);
+    return AddrInfo{inet_ntoa(paddr.sin_addr), ntohs(paddr.sin_port)};
 }
 
-void BaseSocket::connect(const string & addr, unsigned short port) {
-  sockaddr_in saddr = make_addr(addr, port);
+void BaseSocket::connect(const AddrInfo & addr) {
+  sockaddr_in saddr = make_addr(addr);
 
   if (::connect(sd, (sockaddr*)&saddr, sizeof(saddr)) < 0) {
     throw BaseSocket::SocketException(errno);
   }
 }
 
-int BaseSocket::send(const string& data) {
-    const char * buffer = data.c_str();
-    int len = data.size();
-
-    return send(buffer, len);
+int BaseSocket::send(const vector<char>& buffer) {
+    return send(buffer.data(), buffer.size());
 }
 
 int BaseSocket::send(const char* buffer, int num_bytes) {
@@ -124,12 +119,11 @@ int BaseSocket::send(const char* buffer, int num_bytes) {
     return n;
 }
 
-string BaseSocket::recv(int max_bytes) {
-    char buffer[max_bytes];
-    buffer[0] = 0;
-    
-    int n = recv(buffer, max_bytes);
-    return string(buffer, n);    
+vector<char> BaseSocket::recv(int max_bytes) {
+    vector<char> buffer(max_bytes, 0);
+
+    int n = recv(buffer.data(), max_bytes);
+    return buffer;
 }
 
 int BaseSocket::recv(char* buffer, int max_bytes) {
@@ -143,7 +137,7 @@ int BaseSocket::recv(char* buffer, int max_bytes) {
     return n;    
 }
 
-bool BaseSocket::hasData(){
+bool BaseSocket::hasData() const{
     char x;
     struct timeval tv= {0,0};
     fd_set socks;
