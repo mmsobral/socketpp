@@ -23,30 +23,32 @@ int main(int argc, char** argv) {
         try {
             // aguarda uma nova conexão ou dados em 
             //uma conexão existente
-            auto & sock = server.wait(0);
+            auto conn = server.wait(0);
+            if (conn) {
+                auto sock = conn.value();
+                // obtém o IP e port do socket da outra ponta da
+                // conexão
+                auto addr = sock.get_peer();
 
-            // obtém o IP e port do socket da outra ponta da
-            // conexão
-            auto addr = sock.get_peer();
-           
-            if (sock.isNew()) {
-                // caso contrário, deve ser uma  nova conexão
-                cout << "Nova conexão: " << addr.str() << endl;
-            } else { 
-              // tenta receber até 1024 bytes no socket retornado
-              // por "wait"
-              auto data = sock.recv(1024);
+                if (sock.isNew()) {
+                    // caso contrário, deve ser uma  nova conexão
+                    cout << "Nova conexão: " << addr.str() << endl;
+                } else {
+                    // tenta receber até 1024 bytes no socket retornado
+                    // por "wait"
+                    auto data = sock.recv(1024);
 
-              // conseguiu ler algo desse socket ...
-              if (data.size()) {                
-                // ...mostra-os na tela e envia-os de volta
-                // para a outra ponta da conexão
-                cout << "recebeu de " << addr.str() << ": ";
-                cout.write(data.data(), data.size()) << endl;
-                
-                string resp = "recebido: " + string(data.begin(), data.end());
-                sock.send(resp);
-              }
+                    // conseguiu ler algo desse socket ...
+                    if (data.size()) {
+                        // ...mostra-os na tela e envia-os de volta
+                        // para a outra ponta da conexão
+                        cout << "recebeu de " << addr.str() << ": ";
+                        cout.write(data.data(), data.size()) << endl;
+
+                        string resp = "recebido: " + string(data.begin(), data.end());
+                        sock.send(resp);
+                    }
+                }
             }
         } catch (sockpp::TCPServerSocket::DisconnectedException e) {
             // esta exceção informa que uma conexão foi encerrada

@@ -14,6 +14,7 @@
 #include <arpa/inet.h>
 #include <unistd.h>
 #include <memory>
+#include <optional>
 #include "BaseSocket.h"
 
 namespace sockpp {
@@ -91,20 +92,20 @@ namespace sockpp {
 
         // aceita uma conexão. Isso retorna um outro socket,
         // que deve ser usado para envio e recepção
-        Connection &accept();
+        std::optional<Connection> accept();
 
         // espera por novas conexões OU por dados disponíveis
         // nas conexões existentes por no máximo "timeout_ms" milissegundos.
         // Retorna o primeiro socket que tiver
         // dados para serem lidos. Novas conexões têm prioridade em relação
         // a dados existentes ...
-        Connection &wait(long timeout_ms);
+        std::optional<Connection> wait(long timeout_ms);
 
         // espera indefinidamente por novas conexões OU por dados disponíveis
         // nas conexões existentes. Retorna o primeiro socket que tiver
         // dados para serem lidos. Novas conexões têm prioridade em relação
         // a dados existentes ...
-        Connection &wait();
+        std::optional<Connection> wait();
 
         // encerra uma das conexões
         // isso é opcional: se um socket for encerrado explicitamente

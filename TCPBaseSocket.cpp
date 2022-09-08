@@ -64,15 +64,14 @@ namespace sockpp {
     TCPServerSocket::~TCPServerSocket() {
     }
 
-    Connection &TCPServerSocket::accept() {
+    std::optional<Connection> TCPServerSocket::accept() {
         sockaddr_in addr;
         socklen_t len = sizeof(addr);
 
         int con = ::accept(sd, (sockaddr *) &addr, &len);
         if (con < 0) throw TCPBaseSocket::SocketException(errno);
-//        auto novo = std::make_unique<Connection>(con);
         conns.push_back(std::make_unique<Connection>(con));
-        return *conns.back();
+        return std::optional<Connection>{*conns.back()};
     }
 
     int TCPServerSocket::get_num_connections() const {
@@ -89,11 +88,11 @@ namespace sockpp {
 
     }
 
-    Connection &TCPServerSocket::wait() {
+    std::optional<Connection> TCPServerSocket::wait() {
         return wait(0);
     }
 
-    Connection &TCPServerSocket::wait(long timeout_ms) {
+    std::optional<Connection> TCPServerSocket::wait(long timeout_ms) {
         if (not sd) throw TCPBaseSocket::SocketException(EINVAL);
         timeval tv, *tv_ptr = NULL;
 
@@ -118,7 +117,8 @@ namespace sockpp {
 
         int n = select(maior + 1, &socks, NULL, NULL, tv_ptr);
 
-        if (not n) throw TCPServerSocket::TimeoutException();
+        if (not n) return std::nullopt;
+//        if (not n) throw TCPServerSocket::TimeoutException();
 
         if (FD_ISSET(sd, &socks)) {
             return accept();
@@ -131,11 +131,11 @@ namespace sockpp {
                     throw TCPServerSocket::DisconnectedException(sock->get_peer());
                 }
                 if (sock->isNew()) sock->set_used();
-                return *sock;
+                return std::optional<Connection>{*sock};
             }
         }
 
-        throw std::exception();
+        return std::nullopt;
     }
 
     void TCPServerSocket::check_disconnected() {
