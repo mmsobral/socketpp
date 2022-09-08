@@ -103,6 +103,10 @@ void BaseSocket::connect(const AddrInfo & addr) {
   }
 }
 
+int BaseSocket::send(string_view buffer) {
+    return send(buffer.data(), buffer.size());
+}
+
 int BaseSocket::send(const vector<char>& buffer) {
     return send(buffer.data(), buffer.size());
 }

@@ -29,7 +29,8 @@ class UDPSocket : public BaseSocket {
   
   // envia os bytes contidos em "data"
   int send(const vector<char> & data, const AddrInfo & addr);
-  
+  int send(string_view buffer, const AddrInfo & addr);
+
   // envia os "numbytes" bytes contidos em "buffer"
   int send(const char* buffer, int num_bytes, const AddrInfo & addr);
 

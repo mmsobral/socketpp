@@ -41,6 +41,10 @@ int UDPSocket::send(const vector<char>& buffer, const AddrInfo & addr) {
     return send(buffer.data(), buffer.size(), addr);
 }
 
+int UDPSocket::send(string_view buffer, const AddrInfo & addr) {
+    return send(buffer.data(), buffer.size(), addr);
+}
+
 int UDPSocket::send(const char* buffer, int num_bytes, const AddrInfo & addr) {
     if (not sd) throw SocketException(EINVAL); 
     

@@ -14,6 +14,7 @@
 #include <arpa/inet.h>
 #include <unistd.h>
 #include <vector>
+#include <string_view>
 
 using namespace std;
 
@@ -22,7 +23,11 @@ struct AddrInfo {
     uint16_t port;
 
     AddrInfo(): addr("0.0.0.0"), port(0) {}
+    AddrInfo(uint16_t port): addr("0.0.0.0"), port(port) {}
     AddrInfo(const string & addr, uint16_t port=0): addr(addr), port(port) {}
+    string str() const {
+        return addr+':'+to_string(port);
+    }
 };
 
 // classe BaseSocket: não deve ser instanciada diretamente ..
@@ -47,6 +52,7 @@ class BaseSocket {
 
   // envia os "numbytes" bytes contidos em "buffer"
   int send(const char* buffer, int num_bytes);
+  int send(string_view buffer);
   int send(const vector<char> & buffer);
 
   // recebe até "max_bytes", e retorna-os como um vector

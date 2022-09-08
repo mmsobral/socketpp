@@ -25,37 +25,33 @@ int main(int argc, char** argv) {
             //uma conexão existente
             Connection & sock = server.wait(0);
 
-            string addr;
-            unsigned short port;
-
-            // obtém o IP e port do socket da outra ponta da 
+            // obtém o IP e port do socket da outra ponta da
             // conexão
-            sock.get_peer(addr, port);
+            auto addr = sock.get_peer();
            
             if (sock.isNew()) {
                 // caso contrário, deve ser uma  nova conexão
-                cout << "Nova conexão: " << addr << ':' << port << endl;
+                cout << "Nova conexão: " << addr.str() << endl;
             } else { 
               // tenta receber até 1024 bytes no socket retornado
               // por "wait"
-              string data = sock.recv(1024);
+              auto data = sock.recv(1024);
 
               // conseguiu ler algo desse socket ...
               if (data.size()) {                
                 // ...mostra-os na tela e envia-os de volta
                 // para a outra ponta da conexão
-                cout << "recebeu de " << addr << ':' << port;
-                cout << ": " << data << endl;
+                cout << "recebeu de " << addr.str() << ": ";
+                cout.write(data.data(), data.size()) << endl;
                 
-                data = "recebido: " + data;
-                sock.send(data);
+                string resp = "recebido: " + string(data.begin(), data.end());
+                sock.send(resp);
               }
             }
         } catch (TCPServerSocket::DisconnectedException e) {
             // esta exceção informa que uma conexão foi encerrada
             // o socket correspondente foi invalidado automaticamente
-            cout << e.what() << ": " << e.get_addr() << ':';
-            cout << e.get_port()<< endl;
+            cout << e.what() << ": " << e.get_addr().str() << endl;
         }
     }
     

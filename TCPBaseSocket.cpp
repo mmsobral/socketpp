@@ -26,8 +26,8 @@ TCPBaseSocket::TCPBaseSocket() : BaseSocket() {
 TCPBaseSocket::TCPBaseSocket(const TCPBaseSocket& orig) : BaseSocket(orig){
 }
 
-TCPBaseSocket::TCPBaseSocket(const string& addr, unsigned short port) {
-    init(SOCK_STREAM, 6, addr, port);
+TCPBaseSocket::TCPBaseSocket(const AddrInfo& addr) {
+    init(SOCK_STREAM, 6, addr);
 }
 
 TCPBaseSocket::TCPBaseSocket(int socket_descriptor) : BaseSocket(socket_descriptor) {
@@ -36,7 +36,7 @@ TCPBaseSocket::TCPBaseSocket(int socket_descriptor) : BaseSocket(socket_descript
 TCPBaseSocket::~TCPBaseSocket() {
 }
 
-bool TCPBaseSocket::isConnected(){
+bool TCPBaseSocket::isConnected() const{
     char x;
     struct timeval tv= {0,0};
     fd_set socks;
@@ -51,17 +51,17 @@ bool TCPBaseSocket::isConnected(){
     return true;
 }
 
-TCPClientSocket::TCPClientSocket() : TCPBaseSocket("0.0.0.0", 0) {    
+TCPClientSocket::TCPClientSocket() : TCPBaseSocket() {
 }
 
-TCPClientSocket::TCPClientSocket(const string& addr, unsigned short port) : TCPBaseSocket(addr, port) {
+TCPClientSocket::TCPClientSocket(const AddrInfo& addr) : TCPBaseSocket(addr) {
 }
 
-TCPServerSocket::TCPServerSocket(const string& addr, unsigned short port) : TCPBaseSocket(addr, port){
+TCPServerSocket::TCPServerSocket(const AddrInfo& addr) : TCPBaseSocket(addr){
     if (::listen(sd,5) < 0) throw TCPBaseSocket::SocketException(errno);
 }
 
-TCPServerSocket::TCPServerSocket(unsigned short port) : TCPBaseSocket("0.0.0.0", port) {
+TCPServerSocket::TCPServerSocket(uint16_t port) : TCPBaseSocket(AddrInfo{"0.0.0.0", port}) {
     if (::listen(sd,5) < 0) throw TCPBaseSocket::SocketException(errno);
 }
 
@@ -159,11 +159,7 @@ Connection & TCPServerSocket::wait(long timeout_ms) {
         int sockd = sock->get_descriptor();
         if (FD_ISSET(sockd, &socks)) {
             if (not sock->isConnected()) {
-                string addr;
-                unsigned short port;
-
-                sock->get_peer(addr,port);
-                throw TCPServerSocket::DisconnectedException(addr,port);
+                throw TCPServerSocket::DisconnectedException(sock->get_peer());
             }      
             if (sock->isNew()) sock->set_used();
             return *sock;

@@ -18,9 +18,8 @@ int main(int argc, char * argv[]) {
     }
     
     // IP server address and port must be provided as command line arguments
-    string ip = argv[1];
-    auto port = stoi(argv[2]);
-    
+    AddrInfo addr{argv[1], static_cast<uint16_t>(stoi(argv[2]))};
+
     // creates a UDP client socket
     UDPSocket cliente;
     
@@ -30,8 +29,9 @@ int main(int argc, char * argv[]) {
       
       // reads a line from standard inpuit, and send it to the server
       getline(cin, algo);
+      algo += '\n';
       try {
-        cliente.send(algo + '\n', ip, port);
+        cliente.send(algo.c_str(), algo.size(), addr);
       } catch (UDPSocket::SocketException e) {
         perror("send error");
       }

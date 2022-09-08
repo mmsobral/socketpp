@@ -16,15 +16,16 @@ using namespace std;
  * 
  */
 int main(int argc, char** argv) {
-    UDPSocket server("0.0.0.0", 8000);
+    UDPSocket server(AddrInfo( 8000));
     
     while (true) {
       try {
-        string addr;
-        int port;
+        AddrInfo addr;
 
-        string dados = server.recv(64, addr, port);
-        cout << "Recebeu " << dados.size() << " caracteres de " << addr << ":" << port <<" --> " << dados << endl;
+        auto dados = server.recv(64, addr);
+        cout << "Recebeu " << dados.size() << " caracteres de " << addr.addr << ":" << addr.port <<" --> ";
+        cout.write(dados.data(), dados.size());
+        cout << endl;
       } catch (UDPSocket::SocketException e) {
         perror("ao enviar");
       }

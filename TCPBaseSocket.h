@@ -21,14 +21,14 @@ using namespace std;
 // pois é a classe base para TCPClientSocket e TCPServerSocket
 class TCPBaseSocket : public BaseSocket {
  public:     
-  TCPBaseSocket(const string & addr, unsigned short port);
+  TCPBaseSocket(const AddrInfo & addr);
   TCPBaseSocket(int socket_descriptor);
   TCPBaseSocket();
   TCPBaseSocket(const TCPBaseSocket& orig);
   virtual ~TCPBaseSocket();
   
   // testa se o socket está conectado
-  bool isConnected();
+  bool isConnected() const;
   
   // termina a conexão ... porém o destructor a termina
   // automaticamente se necessário
@@ -39,7 +39,7 @@ class TCPBaseSocket : public BaseSocket {
 class TCPClientSocket : public TCPBaseSocket {
  public:
   // cria um socket TCP cliente associado a um endereço IP e port
-  TCPClientSocket(const string & addr, unsigned short port);
+  TCPClientSocket(const AddrInfo & addr);
   
   // cria um socket TCP cliente associado a um endereço IP e port
   // escolhidos pelo sistema operacional
@@ -73,11 +73,11 @@ class TCPClientSocket : public TCPBaseSocket {
 class TCPServerSocket : public TCPBaseSocket {
 public:
   // cria um socket TCP servidor associado a um endereço IP e port    
-  TCPServerSocket(const string & addr, unsigned short port);
+  TCPServerSocket(const AddrInfo & addr);
   
   // cria um socket TCP cliente associado endereço IP 
   // escolhido pelo sistema operacional, e ao port informado
-  TCPServerSocket(unsigned short port);
+  TCPServerSocket(uint16_t port);
   
   virtual ~TCPServerSocket();
   
@@ -122,14 +122,12 @@ public:
   // terminadas
   class DisconnectedException: public exception {
   public:
-      DisconnectedException(const string & addr, unsigned short port) : addr(addr),port(port){}
+      DisconnectedException(const AddrInfo & addr) : addr(addr){}
       ~DisconnectedException() throw() {}
-      const char * what() { return "disconnected";}
-      string get_addr() { return addr;}
-      unsigned short get_port() { return port;}
+      const char * what()  { return "disconnected";}
+      AddrInfo get_addr() const { return addr;}
   private:
-      string addr;
-      unsigned short port;
+      AddrInfo addr;
   };
 
 protected:
