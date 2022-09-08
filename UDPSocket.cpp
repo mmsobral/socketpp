@@ -21,14 +21,14 @@
 using namespace std;
 
 UDPSocket::UDPSocket() {
-  init(SOCK_DGRAM, 17, "0.0.0.0", 0);
+  init(SOCK_DGRAM, 17, AddrInfo{});
 }
 
 UDPSocket::UDPSocket(const UDPSocket& orig) : BaseSocket(orig) {
 }
 
-UDPSocket::UDPSocket(const string& addr, unsigned short port) {
-  init(SOCK_DGRAM, 17, addr, port);
+UDPSocket::UDPSocket(const AddrInfo& addr) {
+  init(SOCK_DGRAM, 17, addr);
 }
 
 UDPSocket::UDPSocket(int socket_descriptor) : BaseSocket(socket_descriptor) {
@@ -37,19 +37,16 @@ UDPSocket::UDPSocket(int socket_descriptor) : BaseSocket(socket_descriptor) {
 UDPSocket::~UDPSocket() {
 }
 
-int UDPSocket::send(const string& data, const string & addr, int port) {
-    const char * buffer = data.c_str();
-    int len = data.size();
-
-    return send(buffer, len, addr, port);
+int UDPSocket::send(const vector<char>& buffer, const AddrInfo & addr) {
+    return send(buffer.data(), buffer.size(), addr);
 }
 
-int UDPSocket::send(const char* buffer, int num_bytes, const string & addr, int port) {
+int UDPSocket::send(const char* buffer, int num_bytes, const AddrInfo & addr) {
     if (not sd) throw SocketException(EINVAL); 
     
     if (not num_bytes) return 0;
 
-    sockaddr_in saddr = make_addr(addr, port);        
+    sockaddr_in saddr = make_addr(addr);
     
     int n = ::sendto(sd, buffer, num_bytes, 0, (sockaddr*)&saddr, sizeof(saddr));
     
@@ -58,15 +55,27 @@ int UDPSocket::send(const char* buffer, int num_bytes, const string & addr, int 
     return n;
 }
 
-string UDPSocket::recv(int max_bytes, string & addr, int & port) {
-    char buffer[max_bytes];
-    buffer[0] = 0;
-    
-    int n = recv(buffer, max_bytes, addr, port);
-    return string(buffer, n);    
+vector<char> UDPSocket::recv(int max_bytes) {
+    AddrInfo addr;
+
+    return recv(max_bytes, addr);
 }
 
-int UDPSocket::recv(char* buffer, int max_bytes, string & addr, int & port) {
+vector<char> UDPSocket::recv(int max_bytes, AddrInfo & addr) {
+    vector<char> buffer(max_bytes, 0);
+
+    int n = recv(buffer.data(), max_bytes, addr);
+    buffer.resize(n);
+    return buffer;
+}
+
+int UDPSocket::recv(char* buffer, int max_bytes) {
+    AddrInfo addr;
+
+    return recv(buffer, max_bytes, addr);
+}
+
+int UDPSocket::recv(char* buffer, int max_bytes, AddrInfo & addr) {
     if (not sd) throw SocketException(EINVAL); 
     sockaddr_in saddr;
     socklen_t addrlen = sizeof(addr);
@@ -76,8 +85,9 @@ int UDPSocket::recv(char* buffer, int max_bytes, string & addr, int & port) {
         if (errno != EAGAIN) throw SocketException(errno);
         n = 0;
     }
-    addr = inet_ntoa(saddr.sin_addr);
-    port = ntohs(saddr.sin_port);    
+
+    addr.addr = inet_ntoa(saddr.sin_addr);
+    addr.port = ntohs(saddr.sin_port);
     return n;    
 }
 

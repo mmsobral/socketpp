@@ -50,8 +50,7 @@ class BaseSocket {
   int send(const vector<char> & buffer);
 
   // recebe até "max_bytes", e retorna-os como um vector
-  // se max_bytes for 0, recebe o que estiver disponível
-  vector<char> recv(int max_bytes=0);
+  vector<char> recv(int max_bytes);
   
   // recebe até "max_bytes", e grava-os em "buffer"
   int recv(char * buffer, int max_bytes);

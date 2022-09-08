@@ -123,6 +123,7 @@ vector<char> BaseSocket::recv(int max_bytes) {
     vector<char> buffer(max_bytes, 0);
 
     int n = recv(buffer.data(), max_bytes);
+    buffer.resize(n);
     return buffer;
 }
 
