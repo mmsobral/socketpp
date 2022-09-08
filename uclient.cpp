@@ -13,15 +13,15 @@ using std::endl;
 
 int main(int argc, char * argv[]) {
     if (argc < 3) {
-        cerr << "Use: " << argv[0] << " IP_server_address port" << endl;
+        std::cerr << "Use: " << argv[0] << " IP_server_address port" << endl;
         return 0;
     }
     
     // IP server address and port must be provided as command line arguments
-    AddrInfo addr{argv[1], static_cast<uint16_t>(stoi(argv[2]))};
+    sockpp::AddrInfo addr{argv[1], static_cast<uint16_t>(std::stoi(argv[2]))};
 
     // creates a UDP client socket
-    UDPSocket cliente;
+    sockpp::UDPSocket cliente;
     
     // send forever ...
     while (true) {
@@ -32,7 +32,7 @@ int main(int argc, char * argv[]) {
       algo += '\n';
       try {
         cliente.send(algo.c_str(), algo.size(), addr);
-      } catch (UDPSocket::SocketException e) {
+      } catch (sockpp::UDPSocket::SocketException e) {
         perror("send error");
       }
     }

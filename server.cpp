@@ -15,7 +15,7 @@ using namespace std;
  */
 int main(int argc, char** argv) {
     // cria um socket servidor que recebe conexões no port 8000
-    TCPServerSocket server(8000);
+    sockpp::TCPServerSocket server(8000);
     
     // fica eternamente recebendo novas conexões
     // e dados de conexões existentes
@@ -23,7 +23,7 @@ int main(int argc, char** argv) {
         try {
             // aguarda uma nova conexão ou dados em 
             //uma conexão existente
-            Connection & sock = server.wait(0);
+            auto & sock = server.wait(0);
 
             // obtém o IP e port do socket da outra ponta da
             // conexão
@@ -48,7 +48,7 @@ int main(int argc, char** argv) {
                 sock.send(resp);
               }
             }
-        } catch (TCPServerSocket::DisconnectedException e) {
+        } catch (sockpp::TCPServerSocket::DisconnectedException e) {
             // esta exceção informa que uma conexão foi encerrada
             // o socket correspondente foi invalidado automaticamente
             cout << e.what() << ": " << e.get_addr().str() << endl;

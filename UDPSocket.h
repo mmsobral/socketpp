@@ -15,34 +15,42 @@
 #include <unistd.h>
 #include "BaseSocket.h"
 
-using namespace std;
+namespace sockpp {
 
 // classe UDPSocket: não deve ser instanciada diretamente ..
 // pois é a classe base para UDPClientSocket e UDPServerSocket
-class UDPSocket : public BaseSocket {
- public:     
-  UDPSocket(const AddrInfo & addr);
-  UDPSocket(int socket_descriptor);
-  UDPSocket();
-  UDPSocket(const UDPSocket& orig);
-  virtual ~UDPSocket();
-  
-  // envia os bytes contidos em "data"
-  int send(const vector<char> & data, const AddrInfo & addr);
-  int send(string_view buffer, const AddrInfo & addr);
+    class UDPSocket : public BaseSocket {
+    public:
+        UDPSocket(const AddrInfo &addr);
 
-  // envia os "numbytes" bytes contidos em "buffer"
-  int send(const char* buffer, int num_bytes, const AddrInfo & addr);
+        UDPSocket(int socket_descriptor);
 
-  // recebe até "max_bytes", e retorna-os como uma string
-  vector<char> recv(int max_bytes, AddrInfo & addr);
-  vector<char> recv(int max_bytes);
-  
-  // recebe até "max_bytes", e grava-os em "buffer"
-  int recv(char * buffer, int max_bytes, AddrInfo & addr);
-  int recv(char * buffer, int max_bytes);
-  
-};
+        UDPSocket();
 
+        UDPSocket(const UDPSocket &orig);
+
+        virtual ~UDPSocket();
+
+        // envia os bytes contidos em "data"
+        int send(const std::vector<char> &data, const AddrInfo &addr);
+
+        int send(std::string_view buffer, const AddrInfo &addr);
+
+        // envia os "numbytes" bytes contidos em "buffer"
+        int send(const char *buffer, int num_bytes, const AddrInfo &addr);
+
+        // recebe até "max_bytes", e retorna-os como uma string
+        std::vector<char> recv(int max_bytes, AddrInfo &addr);
+
+        std::vector<char> recv(int max_bytes);
+
+        // recebe até "max_bytes", e grava-os em "buffer"
+        int recv(char *buffer, int max_bytes, AddrInfo &addr);
+
+        int recv(char *buffer, int max_bytes);
+
+    };
+
+}
 #endif	/* UDPSOCKET_H */
 

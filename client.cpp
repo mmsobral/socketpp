@@ -15,10 +15,10 @@ using namespace std;
  * 
  */
 int main(int argc, char** argv) {
-    TCPClientSocket client;
+    sockpp::TCPClientSocket client;
     
     // conecta no servidor da wiki
-    client.connect(AddrInfo("wiki.sj.ifsc.edu.br", 80));
+    client.connect(sockpp::AddrInfo("wiki.sj.ifsc.edu.br", 80));
     
     // faz uma requisição HTTP
     client.send("GET / HTTP/1.1\n\n");
