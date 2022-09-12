@@ -50,6 +50,12 @@ namespace sockpp {
         return n;
     }
 
+    std::vector<char> UDPSocket::recv() {
+        AddrInfo addr;
+
+        return recv(MaxDatagramSize, addr);
+    }
+
     std::vector<char> UDPSocket::recv(int max_bytes) {
         AddrInfo addr;
 

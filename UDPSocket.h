@@ -43,11 +43,14 @@ namespace sockpp {
 
         std::vector<char> recv(int max_bytes);
 
+        std::vector<char> recv();
+
         // recebe até "max_bytes", e grava-os em "buffer"
         int recv(char *buffer, int max_bytes, AddrInfo &addr);
 
         int recv(char *buffer, int max_bytes);
 
+        const size_t MaxDatagramSize = 8192;
     };
 
 }
