@@ -33,7 +33,7 @@ namespace sockpp {
         // envia os bytes contidos em "data"
         int send(const std::vector<char> &data, const AddrInfo &addr);
 
-        int send(std::string_view buffer, const AddrInfo &addr);
+        int send(const std::string& buffer, const AddrInfo &addr);
 
         // envia os "numbytes" bytes contidos em "buffer"
         int send(const char *buffer, int num_bytes, const AddrInfo &addr);

@@ -32,7 +32,7 @@ namespace sockpp {
         return send(buffer.data(), buffer.size(), addr);
     }
 
-    int UDPSocket::send(std::string_view buffer, const AddrInfo &addr) {
+    int UDPSocket::send(const std::string& buffer, const AddrInfo &addr) {
         return send(buffer.data(), buffer.size(), addr);
     }
 

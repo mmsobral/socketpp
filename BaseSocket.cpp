@@ -98,7 +98,7 @@ namespace sockpp {
         }
     }
 
-    int BaseSocket::send(std::string_view buffer) {
+    int BaseSocket::send(const std::string& buffer) {
         return send(buffer.data(), buffer.size());
     }
 

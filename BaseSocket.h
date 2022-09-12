@@ -14,7 +14,7 @@
 #include <arpa/inet.h>
 #include <unistd.h>
 #include <vector>
-#include <string_view>
+//#include <string_view>
 
 namespace sockpp {
     struct AddrInfo {
@@ -59,7 +59,7 @@ namespace sockpp {
         // envia os "numbytes" bytes contidos em "buffer"
         int send(const char *buffer, int num_bytes);
 
-        int send(std::string_view buffer);
+        int send(const std::string& buffer);
 
         int send(const std::vector<char> &buffer);
 
