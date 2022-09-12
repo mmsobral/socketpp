@@ -16,8 +16,7 @@
 
 namespace sockpp {
 
-// classe UDPSocket: não deve ser instanciada diretamente ..
-// pois é a classe base para UDPClientSocket e UDPServerSocket
+// classe UDPSocket: representa sockets UDP, podendo enviar ou receber datagramas
     class UDPSocket : public BaseSocket {
     public:
         UDPSocket(const AddrInfo &addr);
