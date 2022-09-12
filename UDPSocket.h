@@ -38,12 +38,19 @@ namespace sockpp {
         // envia os "numbytes" bytes contidos em "buffer"
         int send(const char *buffer, int num_bytes, const AddrInfo &addr);
 
-        // recebe até "max_bytes", e retorna-os como uma string
+        // recebe até "max_bytes", e retorna-os como um vector<char>
+        // copia em "addr" o IP e port do remetente
         std::vector<char> recv(int max_bytes, AddrInfo &addr);
 
+        // recebe até "max_bytes", e retorna-os como um vector<char>
         std::vector<char> recv(int max_bytes);
 
+        // recebe até MaxDatagramSize e retorna-os como um vector<char>
         std::vector<char> recv();
+
+        // recebe até MaxDatagramSize e retorna-os como um vector<char>
+        // copia em "addr" o IP e port do remetente
+        std::vector<char> recv(AddrInfo& addr);
 
         // recebe até "max_bytes", e grava-os em "buffer"
         int recv(char *buffer, int max_bytes, AddrInfo &addr);
