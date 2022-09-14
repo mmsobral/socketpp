@@ -28,6 +28,24 @@ namespace sockpp {
     UDPSocket::~UDPSocket() {
     }
 
+    void UDPSocket::set_default_peer(const AddrInfo &addr) {
+        peer_addr = addr;
+    }
+
+    int UDPSocket::send(const std::vector<char> &buffer) {
+        if (peer_addr.is_any()) {
+            throw AddrException("peer is not set");
+        }
+        return send(buffer.data(), buffer.size(), peer_addr);
+    }
+
+    int UDPSocket::send(std::string_view buffer) {
+        if (peer_addr.is_any()) {
+            throw AddrException("peer is not set");
+        }
+        return send(buffer.data(), buffer.size(), peer_addr);
+    }
+
     int UDPSocket::send(const std::vector<char> &buffer, const AddrInfo &addr) {
         return send(buffer.data(), buffer.size(), addr);
     }

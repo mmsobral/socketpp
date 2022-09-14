@@ -30,6 +30,10 @@ namespace sockpp {
         std::string str() const {
             return addr + ':' + std::to_string(port);
         }
+
+        bool is_any() const {
+            return port == 0 && addr == "0.0.0.0";
+        }
     };
 
 // classe BaseSocket: não deve ser instanciada diretamente ..
@@ -90,6 +94,19 @@ namespace sockpp {
 
         private:
             int erro;
+        };
+        // classe AddrException: usada para informar erros
+        // de endereço de socketg (addrInfo).
+        class AddrException : public std::exception {
+        public:
+            AddrException(const std::string & msg) : msg(msg) {}
+
+            ~AddrException() throw() {}
+
+            const char *what() { return msg.c_str(); }
+
+        private:
+            const std::string msg;
         };
 
     protected:

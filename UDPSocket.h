@@ -29,10 +29,18 @@ namespace sockpp {
 
         virtual ~UDPSocket();
 
-        // envia os bytes contidos em "data"
+        // define o endereço default do peer
+        void set_default_peer(const AddrInfo & addr);
+
+        // envia os bytes contidos em "data" para o peer especificado em "addr"
         int send(const std::vector<char> &data, const AddrInfo &addr);
 
-        int send(std::string_view buffer, const AddrInfo &addr);
+        int send(std::string_view data, const AddrInfo &addr);
+
+        // envia os bytes contidos em "data" para o default peer
+        int send(const std::vector<char> &data);
+
+        int send(std::string_view data);
 
         // envia os "numbytes" bytes contidos em "buffer"
         int send(const char *buffer, int num_bytes, const AddrInfo &addr);
@@ -57,6 +65,8 @@ namespace sockpp {
         int recv(char *buffer, int max_bytes);
 
         const size_t MaxDatagramSize = 8192;
+    protected:
+        AddrInfo peer_addr;
     };
 
 }

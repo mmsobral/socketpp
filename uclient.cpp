@@ -22,6 +22,7 @@ int main(int argc, char * argv[]) {
 
     // creates a UDP client socket
     sockpp::UDPSocket cliente;
+    cliente.set_default_peer(addr);
     
     // send forever ...
     while (true) {
@@ -31,7 +32,7 @@ int main(int argc, char * argv[]) {
       getline(cin, algo);
       algo += '\n';
       try {
-        cliente.send(algo.c_str(), algo.size(), addr);
+        cliente.send(algo.c_str(), algo.size());
       } catch (sockpp::UDPSocket::SocketException e) {
         perror("send error");
       }
