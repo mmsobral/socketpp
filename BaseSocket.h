@@ -34,6 +34,13 @@ namespace sockpp {
         bool is_any() const {
             return port == 0 && addr == "0.0.0.0";
         }
+
+        bool operator==(const AddrInfo & outro) const {
+            return addr == outro.addr && port == outro.port;
+        }
+        bool operator!=(const AddrInfo & outro) const {
+            return addr != outro.addr || port != outro.port;
+        }
     };
 
 // classe BaseSocket: não deve ser instanciada diretamente ..
