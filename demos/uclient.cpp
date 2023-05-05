@@ -4,7 +4,7 @@
 
 #include <iostream>
 #include <string>
-#include "UDPSocket.h"
+#include "../UDPSocket.h"
 
 using std::string;
 using std::cin;
