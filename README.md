@@ -8,7 +8,7 @@ SocketPP is a very simple API with TCP and UDP socket implementatins for C++, bo
 
 ## Compilation using cmake
 
-Include this in CMakeLists.txt=:
+Include this in __CMakeLists.txt__:
 
 ```
 include(FetchContent)
