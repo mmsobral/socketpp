@@ -14,7 +14,7 @@ Include this in __CMakeLists.txt__:
 include(FetchContent)
 FetchContent_Declare(
         socketpp
-        URL https://github.com/IFSCEngtelecomPTC/socketpp/archive/refs/tags/v1.0.1.tar.gz
+        URL https://github.com/socketpp/archive/refs/tags/v1.0.1.tar.gz
 )
 FetchContent_MakeAvailable(socketpp)
 include_directories(${poller_SOURCE_DIR} .)
