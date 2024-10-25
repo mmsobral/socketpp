@@ -17,7 +17,7 @@ FetchContent_Declare(
         URL https://github.com/mmsobral/socketpp/archive/refs/tags/v1.0.0.tar.gz
 )
 FetchContent_MakeAvailable(socketpp)
-include_directories(${poller_SOURCE_DIR} .)
+include_directories(${socketpp_SOURCE_DIR} .)
 
 # OBS: this is just a demo to show you how to link this library to your executable
 
