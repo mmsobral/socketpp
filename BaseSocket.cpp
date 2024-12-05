@@ -55,6 +55,11 @@ namespace sockpp {
         sd = orig.sd;
     }
 
+    BaseSocket::BaseSocket(BaseSocket &&orig) {
+        sd = orig.sd;
+        orig.sd = -1;
+    }
+
     BaseSocket::BaseSocket(const AddrInfo &addr) {
     }
 
@@ -65,7 +70,7 @@ namespace sockpp {
     }
 
     BaseSocket::~BaseSocket() {
-        if (sd) ::close(sd);
+        if (sd>=0) ::close(sd);
     }
 
     AddrInfo BaseSocket::get_peer() const {

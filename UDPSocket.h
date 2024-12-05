@@ -26,6 +26,7 @@ namespace sockpp {
         UDPSocket();
 
         UDPSocket(const UDPSocket &orig);
+        UDPSocket(UDPSocket &&orig);
 
         virtual ~UDPSocket();
 

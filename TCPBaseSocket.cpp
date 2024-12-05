@@ -23,6 +23,9 @@ namespace sockpp {
     TCPBaseSocket::TCPBaseSocket(const TCPBaseSocket &orig) : BaseSocket(orig) {
     }
 
+    TCPBaseSocket::TCPBaseSocket(TCPBaseSocket &&orig) : BaseSocket(orig) {
+    }
+
     TCPBaseSocket::TCPBaseSocket(const AddrInfo &addr) {
         init(SOCK_STREAM, 6, addr);
     }
