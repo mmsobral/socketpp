@@ -20,10 +20,8 @@ namespace sockpp {
     TCPBaseSocket::TCPBaseSocket() : BaseSocket() {
     }
 
-    TCPBaseSocket::TCPBaseSocket(const TCPBaseSocket &orig) : BaseSocket(orig) {
-    }
 
-    TCPBaseSocket::TCPBaseSocket(TCPBaseSocket &&orig) : BaseSocket(orig) {
+    TCPBaseSocket::TCPBaseSocket(TCPBaseSocket &&orig) : BaseSocket(std::move(orig)) {
     }
 
     TCPBaseSocket::TCPBaseSocket(const AddrInfo &addr) {

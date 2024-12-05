@@ -53,7 +53,6 @@ namespace sockpp {
 
         BaseSocket();
 
-        BaseSocket(const BaseSocket &orig);
         BaseSocket(BaseSocket &&orig);
 
         virtual ~BaseSocket();

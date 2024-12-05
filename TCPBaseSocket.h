@@ -30,7 +30,6 @@ namespace sockpp {
 
         TCPBaseSocket();
 
-        TCPBaseSocket(const TCPBaseSocket &orig);
         TCPBaseSocket(TCPBaseSocket &&orig);
 
         virtual ~TCPBaseSocket();

@@ -51,10 +51,6 @@ namespace sockpp {
     BaseSocket::BaseSocket() : sd(0) {
     }
 
-    BaseSocket::BaseSocket(const BaseSocket &orig) {
-        sd = orig.sd;
-    }
-
     BaseSocket::BaseSocket(BaseSocket &&orig) {
         sd = orig.sd;
         orig.sd = -1;

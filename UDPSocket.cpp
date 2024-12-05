@@ -15,10 +15,8 @@ namespace sockpp {
         init(SOCK_DGRAM, 17, AddrInfo{});
     }
 
-    UDPSocket::UDPSocket(const UDPSocket &orig) : BaseSocket(orig) {
-    }
 
-    UDPSocket::UDPSocket(UDPSocket &&orig) : BaseSocket(orig) {
+    UDPSocket::UDPSocket(UDPSocket &&orig) : BaseSocket(std::move(orig)) {
     }
 
     UDPSocket::UDPSocket(const AddrInfo &addr) {
